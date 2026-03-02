@@ -1,0 +1,200 @@
+# CODE PROJET TECHNIQUE QUANTITATIF
+
+rm(list=ls()) # Vider l'environnement 
+
+# IMPORTATION DU DATAFRAME ( nom du dataframe: Database sous format csv)
+
+Database <- read.csv2("C:/Users/sarah/OneDrive/Bureau/technique quanti M1/Database.csv")
+
+
+class(Database) # Affiche le type d'objet importé 
+str(Database) # Affiche les colonnes composantes ainsi que leur nature
+names(Database) # Affichage de nom des colonnes 
+
+View(Database)# Vu du dataframe importé 
+ 
+
+##Statistiques descritpives des Variables explicatives( Analyse univariée):
+summary(Database$nbr_log)
+summary(Database$id_etu)
+summary(Database$gender)
+summary(Database$age)
+summary(Database$level_licence)
+summary(Database$level_master)
+summary(Database$level_other)
+summary(Database$logement)
+
+summary(Database$aid_parents_.low)
+summary(Database$aid_parents_high)
+summary(Database$condition_study_low)
+summary(Database$condition_study_high)
+summary(Database$high_motivation)
+summary(Database$low_motivation)
+summary(Database$gest_stress)
+summary(Database$self_confidence.high)
+summary(Database$self_confidence_low)
+summary(Database$pratiq_ph)
+summary(Database$high_satisfaction)
+summary(Database$low_satisfaction)
+
+
+#Modèle 1 proposé: 
+modele_1 <- lm(scholar_mean ~ id_etu + gender+age+level_licence+ level_master + logement+nbr_log+aid_parents_high+ nbr_hour+ eff_method.low+ eff_method.high+ high_motivation+ gest_stress+self_confidence.high+ self_confidence_low+ pratiq_ph+ high_satisfaction+ low_satisfaction, data = Database)
+summary(modele_1)
+
+##Modèle 2 proposé: Avant étude et vision de plot on se focalise donc sur l'importance de coef au sein du premier modèle effectué. On garde donc les variables significatives tel que: (on sait qu'elles sont significatives en fonction d'étoile présentent au sein du modèle)
+modele_2 <- lm(scholar_mean ~ age + logement, data = Database)
+summary(modele_2)
+
+# (après démonstration des plots) On y insère aid_parents_high à cause de sa variation croissante que l'on peut déduire de par le graphique de régression partielle entre aid_parents_high et scholar_mean notre variable expliquée
+modele_3 <- lm(scholar_mean ~ age + logement+ aid_parents_high+ gender, data = Database)
+summary(modele_3)
+
+# Extraire les noms des variables explicatives ( MODELE 3) 
+variables <- c("id_etu", "gender", "age", "level_licence", "level_master", 
+               "logement","nbr_log", "aid_parents_high","condition_study_high","nbr_hour","eff_method.low","eff_method.high","high_motivation","low_motivation","gest_stress","self_confidence_low", "pratiq_ph","high_satisfaction","low_satisfaction") 
+
+
+
+
+
+#Extraire les variations graphique des variables explicatives ( MODELE 3)
+
+if (!require(car)) install.packages("car") # Installation du packages 
+library(car) 
+
+#Gender
+avPlots(modele_3 , terms = "gender", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs gender") 
+#Age
+avPlots(modele_3, terms = "age", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs age") 
+
+#aid_parents_high
+avPlots(modele_3, terms = "aid_parents_high", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs aid_parents_high") 
+
+
+#logement
+avPlots(modele_3, terms = "logement", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs logement")
+
+
+### CODE SUPPLEMENTAIRE POUR VISUALISATION SUPPLEMANTAIRE( basé uniquement sur le modèle 1)
+
+#self_confidence_low
+avPlots(modele_1, terms = "self_confidence_low", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs self_confidence_low")
+#pratiq_ph 
+avPlots(modele_1, terms = "pratiq_ph", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs aid_pratiq_ph")
+#high_satisfaction
+avPlots(modele_1, terms = "high_satisfaction", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs high_satisfaction")
+
+#Level_licence
+avPlots(modele_1, terms = "level_licence", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle :scholar_mean vs level_licence") 
+#low_satisfaction
+avPlots(modele_1, terms = "low_satisfaction", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs low_satisfaction")
+
+#level_master 
+avPlots(modele_1, terms = "level_master", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs level_master")
+
+#nbr_log
+avPlots(modele_1, terms = "nbr_log", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs nbr_log")
+
+#nbr_hour
+avPlots(modele_1, terms = "nbr_hour", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs nbr_log")
+#eff_method.low
+avPlots(modele_1, terms = "eff_method.low", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs aid_parents_high")
+#eff_method.high
+avPlots(modele_1, terms = "eff_method.high", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs  eff_method.high")
+
+#high_motivation
+avPlots(modele_1, terms = "aid_parents_high", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs aid_parents_high")
+#gest_stress
+avPlots(modele_1, terms = "gest_stress", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs gest_stress")
+#self_confidence.high
+avPlots(modele_1, terms = "self_confidence.high", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs self_confidence.high")
+
+#  VISUALISATION ( MODELE 2) 
+#age 
+avPlots(modele_2, terms = "age", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs age")
+#logement
+avPlots(modele_2, terms = "logement", id = FALSE, col.lines = "red", col = "blue", 
+        main = "Régression partielle : scholar_mean vs age")
+
+
+#####Test de corrélation entre les variables explicatives 
+### Au sein du modèle gardé ( modèle_3)
+ 
+resultat<- cor.test(Database$age,Database$logement) 
+print(resultat)
+
+resultat<- cor.test(Database$age,Database$aid_parents_high) 
+print(resultat)
+
+resultat<- cor.test(Database$aid_parents_high,Database$logement) 
+print(resultat)
+
+resultat<- cor.test(Database$gender,Database$logement) 
+print(resultat)
+
+resultat<- cor.test(Database$gender,Database$age) 
+print(resultat)
+
+resultat<- cor.test(Database$gender,Database$aid_parents_high) 
+print(resultat)  
+# Résultat : Globalement on observe une très faible colinéarité entre les variablex explicatives 
+
+
+# Afficher permet d'afficher la dispersion des choix des echantillons entre une intervalle de 2 variables)
+
+# Affichage de la répartition des âges selon le type de logement (0 = hors domicile parental, 1 = domicile parental)
+tapply(Database$age, Database$logement, summary)  
+
+# Affichage de  la répartition des âges selon le niveau d’aide des parents (High / Low)
+tapply(Database$age, Database$aid_parents_high, summary)  
+
+# Affichage  la répartition de l’aide des parents selon le type de logement
+tapply(Database$aid_parents_high, Database$logement, summary)  
+
+# # Affichage  la répartition des logements  selon le genre de l'observation
+tapply(Database$ logement, Database$gender, summary)  
+
+
+# TEST DE MUTLICOLINEARITE AU SEIN DU MODELE 3
+library(car)
+vif(modele_3)  # modèle_3 = ton modèle final
+
+
+# Résultat: Présence d'aucune multicolinéarité au sein de notre modèle. 
+
+
+## TEST HETEROSCEDASTICITE
+
+library(lmtest) 
+bptest(modele_3)  # Test de Breusch-Pagan 
+# Ecarts types robustes 
+library("lmtest")
+
+# Résultat: Présence d'hétéroscédasticité ( p_value < au seuil de 5% soit 0.05)
+
+### Correction des erreurs standards robustes
+
+library("sandwich") 
+coeftest(modele_3, vcov = vcovHC(modele_3, type = "HC0")) 
+summary(modele_3)
+
+
